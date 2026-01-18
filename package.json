@@ -1,0 +1,16 @@
+{
+  "name": "06-project_setup_professional",
+  "version": "1.0.0",
+  "description": "professional backend setup with chai aur code\\",
+  "keywords": [
+    "javascript",
+    "backend"
+  ],
+  "license": "ISC",
+  "author": "Nikhil",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  }
+}
