@@ -1,0 +1,13 @@
+#dont touch files related to .env
+*.env
+.env.*
+.env
+
+#dont touch VS Code Settings
+/.vscode
+
+#dont touch node modules
+/node_modules
+
+#dont touch distribution related things
+./dist
