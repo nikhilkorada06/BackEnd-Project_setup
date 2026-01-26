@@ -22,9 +22,10 @@ router.route("/register").post(
     ]),
     
     registerUser
+
 );
      
                                                         //url - http://localhost:8000/api/v1/users/register
-// router.route("/login").post(login);             //url - http://localhost:8000/api/v1/users/login
+// router.route("/login").post(login);                  //url - http://localhost:8000/api/v1/users/login
 
 export default router;

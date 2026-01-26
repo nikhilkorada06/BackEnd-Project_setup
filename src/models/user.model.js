@@ -44,11 +44,10 @@ const userSchema = new Schema(
     }
 );
 
-userSchema.pre("save", async function (next){
-    if(!this.isModified("password")) return next();
+userSchema.pre("save", async function (){
+    if(!this.isModified("password")) return;
 
     this.password = await bcrypt.hash(this.password, 10);
-    next();
 });
 // arrow fn wont work here bcz we need to acces and modify all the 
 // data given as a object parameter to userSchema but by using arrow fn 
