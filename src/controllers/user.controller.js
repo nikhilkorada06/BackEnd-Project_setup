@@ -310,13 +310,13 @@ const updateUserAvatar = asyncHandler( async (req, _) => {
     const avatarLocalPath = req.file?.path;                    //Take the image user given to replace previous image.
 
     if(!avatarLocalPath){
-        throw new ApiError( 400, "Avatar File is Missing 😔😔😔");
+        throw new ApiError( 400, "Avatar File is Missing...😔😔😔");
     }
 
     const avatar = await uploadOnCloudinary(avatarLocalPath);   //clouidnary gives response we need to use that url present in the response.
 
     if(!avatar.url){
-        throw new ApiError(400, "Error While Uploading 🤏🤏🤏");
+        throw new ApiError(400, "Error While Uploading...🤏🤏🤏");
     }
 
     const user = await User.findByIdAndUpdate(
@@ -334,21 +334,22 @@ const updateUserAvatar = asyncHandler( async (req, _) => {
     return res
     .status(200)
     .json(
-        new ApiResponse( 200, user, "User Avatar Updated Successfully... 🎉🎉🎉")
+        new ApiResponse( 200, user, "User Avatar Updated Successfully...🎉🎉🎉")
     );
+
 })
 
 const updateUserCoverImage = asyncHandler( async (req, _) => {
     const coverImageLocalPath = req.file?.path;                    //Take the image user given to replace previous image.
 
     if(!coverImageLocalPath){
-        throw new ApiError( 400, "CoverImage File is Missing 😔😔😔");
+        throw new ApiError( 400, "CoverImage File is Missing...😔😔😔");
     }
 
     const coverImage = await uploadOnCloudinary(coverImageLocalPath);   //clouidnary gives response we need to use that url present in the response.
 
     if(!coverImage.url){
-        throw new ApiError(400, "Error While Uploading 🤏🤏🤏");
+        throw new ApiError(400, "Error While Uploading...🤏🤏🤏");
     }
 
     const user = await User.findByIdAndUpdate(
@@ -366,7 +367,7 @@ const updateUserCoverImage = asyncHandler( async (req, _) => {
     return res
     .status(200)
     .json(
-        new ApiResponse( 200, user, "User CoverImage Updated Successfully... 🎉🎉🎉")
+        new ApiResponse( 200, user, "User CoverImage Updated Successfully...🎉🎉🎉")
     );
 })
 
@@ -380,4 +381,4 @@ export {
     updateUserDetails,
     updateUserAvatar,
     updateUserCoverImage,
-};
+}; 
