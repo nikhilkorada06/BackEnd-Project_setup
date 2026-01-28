@@ -53,7 +53,6 @@ const userSchema = new Schema(
 
 userSchema.pre("save", async function (){
     if(!this.isModified("password")) return;
-
     this.password = bcrypt.hash(this.password, 10);
 });
 // arrow fn wont work here bcz we need to acces and modify all the 

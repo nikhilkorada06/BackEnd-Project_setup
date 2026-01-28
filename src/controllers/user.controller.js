@@ -263,9 +263,122 @@ const refreshAccessToken = asyncHandler( async (req, res) => {
     }
 });
 
+const changeCurrentPassword = asyncHandler( async (req, res) => {
+    const {oldPassword, newPassword} = req.body;
+    const user = await User.findById(req.user?._id);
+    const isPasswordCorrect =  await user.isPasswordCorrect(oldPassword);
+    if(!isPasswordCorrect){
+        throw new ApiError(400, "Invalid Old Password 💔💔💔")
+    }
+    user.password = newPassword;     
+    await user.save({validateBeforeSave: false});             //password will be updated by  "userSchema.pre("save", callback())" 
+                                                                // this property or hook will be called when we say "user.save" which was defined in 'user.models.js'
+
+                                                                //I dont want to check validations so i set validateBeforeSave to false, required validation is already done manually by that hook.
+    return res
+    .status(200)
+    .json( new ApiResponse(200, {}, 'Password Changed Successfully 🥳🥳🥳') );
+})
+
+const getCurrentUser = asyncHandler( async (req, res) => {
+    return res
+    .status(200)
+    .json(200, req.user, "current user Fetched Successfully !!! 🍹🍹🍹")
+})
+
+const updateUserDetails = asyncHandler ( async (req, res) => {
+    const { fullName, email } = req.body;
+    if (!(fullName || email)) {
+        throw new ApiError(400, "All fields are Required 😊😊😊");
+    }
+    const user = User.findByIdAndUpdate(
+        req.user?._id, 
+        {
+            $set: {  //set receives an object..
+                fullName, 
+                email,
+            }
+        }
+    ).select("-password")          //password field is avoided from the response received
+
+    return res
+    .status(200)
+    .json(new ApiResponse(200, user, "User Details Updated... 🎉🎉🎉"))
+})
+
+
+const updateUserAvatar = asyncHandler ( async (req, _) => {
+    const avatarLocalPath = req.file?.path;                    //Take the image user given to replace previous image.
+
+    if(!avatarLocalPath){
+        throw new ApiError( 400, "Avatar File is Missing 😔😔😔");
+    }
+
+    const avatar = await uploadOnCloudinary(avatarLocalPath);   //clouidnary gives response we need to use that url present in the response.
+
+    if(!avatar.url){
+        throw new ApiError(400, "Error While Uploading 🤏🤏🤏");
+    }
+
+    const user = await User.findByIdAndUpdate(
+        req.user?._id,
+        {
+            $set: {                          //- $set is an update operator in MongoDB.
+                avatar: avatar.url,          //- It tells MongoDB: “Update this field to the given value.”
+            }                                //- If the field doesn’t exist, $set will create it     
+        },
+        {
+            new: true,          //If you set new: true, Mongoose will instead return the updated document (the one after applying your changes).
+        }
+    ).select("-password");      //rremoves password key from the response..
+
+    return res
+    .status(200)
+    .json(
+        new ApiResponse( 200, user, "User Avatar Updated Successfully... 🎉🎉🎉")
+    );
+})
+
+const updateUserCoverImage = asyncHandler ( async (req, _) => {
+    const coverImageLocalPath = req.file?.path;                    //Take the image user given to replace previous image.
+
+    if(!coverImageLocalPath){
+        throw new ApiError( 400, "CoverImage File is Missing 😔😔😔");
+    }
+
+    const coverImage = await uploadOnCloudinary(coverImageLocalPath);   //clouidnary gives response we need to use that url present in the response.
+
+    if(!coverImage.url){
+        throw new ApiError(400, "Error While Uploading 🤏🤏🤏");
+    }
+
+    const user = await User.findByIdAndUpdate(
+        req.user?._id,
+        {
+            $set: {                                 //- $set is an update operator in MongoDB.
+                coverImage: coverImage.url,         //- It tells MongoDB: “Update this field to the given value.”
+            }                                       //- If the field doesn’t exist, $set will create it     
+        },
+        {
+            new: true,          //If you set new: true, Mongoose will instead return the updated document (the one after applying your changes).
+        }
+    ).select("-password");      //rremoves password key from the response..
+
+    return res
+    .status(200)
+    .json(
+        new ApiResponse( 200, user, "User CoverImage Updated Successfully... 🎉🎉🎉")
+    );
+})
+
 export {
     registerUser,
     loginUser,
     logoutUser,
-    refreshAccessToken
+    refreshAccessToken,
+    changeCurrentPassword,
+    getCurrentUser,
+    updateUserDetails,
+    updateUserAvatar,
+    updateUserCoverImage,
 };
