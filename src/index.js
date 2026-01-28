@@ -1,7 +1,6 @@
-// in this approach we gonna place differnt function in different folders and we gonna import them....
-
-
+// in this approach we gonna place different function in different folders and we gonna import them....
 // require('dotenv').config({path: '../.env'})
+
 import dotenv from 'dotenv';
 import connectDB from "./db/index.js";
 import app from "./app.js";
@@ -14,7 +13,8 @@ dotenv.config(
 
 connectDB()
 .then(() => {
-    app.on("error", (error)=> {
+    //replaced mount with error
+    app.on("mount", (error)=> {
         console.log("ERROR : ", error);
         throw error;
     })
@@ -33,11 +33,7 @@ connectDB()
 
 
 
-
-
-
-
-//In this approach everthing is defined here itself...
+//In this approach everything is defined here itself...
 
 /*
 import mongoose from "mongoose";
