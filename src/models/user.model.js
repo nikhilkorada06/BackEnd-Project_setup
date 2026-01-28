@@ -26,11 +26,11 @@ const userSchema = new Schema(
             index: true  //optimizes the searching with username feature...
         },
         avatar: {
-            type: String,  //cloudnary url
+            type: String,  //cloudinary url
             required: true
         },
         coverImage: {
-            type: String,  //cloudnary url
+            type: String,  //cloudinary url
         },
         watchHistory: [
             {
@@ -53,7 +53,7 @@ const userSchema = new Schema(
 
 userSchema.pre("save", async function (){
     if(!this.isModified("password")) return;
-    this.password = bcrypt.hash(this.password, 10);
+    this.password = await bcrypt.hash(this.password, 10);
 });
 // arrow fn wont work here bcz we need to acces and modify all the 
 // data given as a object parameter to userSchema but by using arrow fn 
