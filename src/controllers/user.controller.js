@@ -49,7 +49,7 @@ const registerUser = asyncHandler( async (req, res)=> {
     //step 1 :- get data from frontend
     const {fullName, email, username, password} = req.body;
 
-    console.log("email: ", email , 
+    console.log(" email: ", email , 
                 " username: ", username, 
                 " fullName: ", fullName,   
                 " password: ", password,  
@@ -181,7 +181,6 @@ const loginUser = asyncHandler( async (req, res)=> {
         )
     );
 
-
 });
 
 const logoutUser = asyncHandler( async (req, res) => {
@@ -283,15 +282,15 @@ const changeCurrentPassword = asyncHandler( async (req, res) => {
 const getCurrentUser = asyncHandler( async (req, res) => {
     return res
     .status(200)
-    .json(200, req.user, "current user Fetched Successfully !!! 🍹🍹🍹")
+    .json( new ApiResponse(200, req.user, "current user Fetched Successfully !!! 🍹🍹🍹"))
 })
 
-const updateUserDetails = asyncHandler ( async (req, res) => {
+const updateUserDetails = asyncHandler( async (req, res) => {
     const { fullName, email } = req.body;
     if (!(fullName || email)) {
         throw new ApiError(400, "All fields are Required 😊😊😊");
     }
-    const user = User.findByIdAndUpdate(
+    const user = await User.findByIdAndUpdate(
         req.user?._id, 
         {
             $set: {  //set receives an object..
@@ -307,7 +306,7 @@ const updateUserDetails = asyncHandler ( async (req, res) => {
 })
 
 
-const updateUserAvatar = asyncHandler ( async (req, _) => {
+const updateUserAvatar = asyncHandler( async (req, _) => {
     const avatarLocalPath = req.file?.path;                    //Take the image user given to replace previous image.
 
     if(!avatarLocalPath){
@@ -339,7 +338,7 @@ const updateUserAvatar = asyncHandler ( async (req, _) => {
     );
 })
 
-const updateUserCoverImage = asyncHandler ( async (req, _) => {
+const updateUserCoverImage = asyncHandler( async (req, _) => {
     const coverImageLocalPath = req.file?.path;                    //Take the image user given to replace previous image.
 
     if(!coverImageLocalPath){
