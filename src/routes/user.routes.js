@@ -14,8 +14,6 @@ import {
 } from "../controllers/user.controller.js";
 import { upload } from "../middlewares/multer.middleware.js";
 import { verifyJWT } from "../middlewares/auth.middleware.js";
-import { get } from "mongoose";
-import { verify } from "jsonwebtoken";
 
 const router = Router();
 
@@ -35,14 +33,13 @@ router.route("/register").post(
             maxCount: 1,
         },
     ]),
+
     registerUser
 );
 //url - http://localhost:8000/api/v1/users/register
 // router.route("/login").post(login);                  //url - http://localhost:8000/api/v1/users/login
 
 router.route("/login").post(loginUser);
-
-//sercured routes...
 router.route("/logout").post(verifyJWT, logoutUser);
 router.route("/refresh-token").post(refreshAccessToken);
 router.route("/change-password").post(verifyJWT, changeCurrentPassword);

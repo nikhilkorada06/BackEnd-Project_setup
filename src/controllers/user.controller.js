@@ -189,8 +189,12 @@ const logoutUser = asyncHandler( async (req, res) => {
     await User.findByIdAndUpdate(
         req.user._id,
         {
-            $set: {                                     // "$set" operator is used to update the value of a field in a document.
-                refreshToken: undefined,
+            // $set: {                                     // "$set" operator is used to update the value of a field in a document.
+            //     refreshToken: undefined,
+            // }
+
+            $unset: {                                   // "$unset" operator is used to remove the field from a document.
+                refreshToken: 1,                        //remove refreshToken field from the document, its value doesn't matter here.
             }
         },
         {
@@ -212,20 +216,21 @@ const logoutUser = asyncHandler( async (req, res) => {
         new ApiResponse(
             200,                                        //status code
             {},                                         //no data to send on logout
-            "User Logged Out Successfully..."            //message after logout
+            "User Logged Out Successfully...! 🥺🥺🥺"            //message after logout
         )
     );
 })
 
 const refreshAccessToken = asyncHandler( async (req, res) => {
 
-    const incomingRefreshToken =  req.cookies.refreshToken || req.body.refreshToken;
+    const incomingRefreshToken =  req.cookies.refreshToken || req.body.refreshToken;  //apps cannot send referesh token in cookies so we are also allowing body to be sent in body.
 
     if(!incomingRefreshToken){
         throw new ApiError(401, "unauthorized request 😔😒😔");
     }
 
     try {
+
         const decodedToken = jwt.verify(
             incomingRefreshToken,
             process.env.REFRESH_TOKEN_SECRET
@@ -259,8 +264,11 @@ const refreshAccessToken = asyncHandler( async (req, res) => {
                 "Access token Refreshed Successfully !!! 🥳🥳🥳"
             )
         );
+
     } catch (error) {
+
         throw new ApiError(401, error?.message || "Invalid Refresh Token 😔😔😔")
+    
     }
 });
 
@@ -298,7 +306,10 @@ const updateUserDetails = asyncHandler( async (req, res) => {
             $set: {  //set receives an object.
                 fullName, 
                 email,
-            }
+            },
+        },
+        {
+            new: true,              //If you set new: true, Mongoose will instead return the updated document (the one after applying your changes).
         }
     ).select("-password")          //password field is avoided from the response received
 
@@ -307,8 +318,7 @@ const updateUserDetails = asyncHandler( async (req, res) => {
     .json(new ApiResponse(200, user, "User Details Updated... 🎉🎉🎉"))
 })
 
-
-const updateUserAvatar = asyncHandler( async (req, _) => {
+const updateUserAvatar = asyncHandler( async (req, res) => {
     const avatarLocalPath = req.file?.path;                    //Take the image user given to replace previous image.
 
     if(!avatarLocalPath){
@@ -333,17 +343,17 @@ const updateUserAvatar = asyncHandler( async (req, _) => {
         }
     ).select("-password");      //removes password key from the response.
 
-    await deleteAssetFromCloudinary(user.avatar);  //deleting previous avatar from cloudinary
+    await deleteAssetFromCloudinary(user.avatarPublicId);  //deleting previous avatar from cloudinary
 
     return res
     .status(200)
     .json(
-        new ApiResponse( 200, user, "User Avatar Updated Successfully...🎉🎉🎉")
+        new ApiResponse( 200, user, "User Avatar Updated Successfully and Previous Avatar Deleted from Cloudinary...🎉🎉🎉")
     );
 
 })
 
-const updateUserCoverImage = asyncHandler( async (req, _) => {
+const updateUserCoverImage = asyncHandler( async (req, res) => {
     const coverImageLocalPath = req.file?.path;                    //Take the image user given to replace previous image.
 
     if(!coverImageLocalPath){
@@ -368,12 +378,12 @@ const updateUserCoverImage = asyncHandler( async (req, _) => {
         }
     ).select("-password");      //removes password key from the response.
 
-    await deleteAssetFromCloudinary(user.coverImage);  //deleting previous coverImage from cloudinary
+    await deleteAssetFromCloudinary(user.coverImagePublicId);  //deleting previous coverImage from cloudinary
 
     return res
     .status(200)
     .json(
-        new ApiResponse( 200, user, "User CoverImage Updated Successfully...🎉🎉🎉")
+        new ApiResponse( 200, user, "User CoverImage Updated Successfully and Previous CoverImage Deleted from Cloudinary...🎉🎉🎉")
     );
 })
 
@@ -523,4 +533,5 @@ export {
     updateUserCoverImage,
     getUserChannelProfile,
     getWatchHistory,
-}; 
+};
+
