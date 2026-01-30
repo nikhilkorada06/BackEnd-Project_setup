@@ -1,10 +1,10 @@
-import asyncHandler from "../utils/asyncHandler.js";
+import asyncHandler from "../utils/asyncHandler.js"
 import {ApiError} from '../utils/ApiErrors.js'
 import {User} from '../models/user.model.js'
 import { uploadOnCloudinary } from "../models/cloudinary.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import jwt from "jsonwebtoken";
-
+import deleteAssetFromCloudinary from "../utils/deleteAssestFromCloudinary.js";
 
 const generateAccessAndRefreshToken = async (userId) => {      // received id of the user as an argument
     try {
@@ -106,7 +106,9 @@ const registerUser = asyncHandler( async (req, res)=> {
         {
             fullName,
             avatar: avatar.url,
+            avatarPublicId: avatar.public_id,
             coverImage: coverImage?.url || "",
+            coverImagePublicId: coverImage?.public_id || "",
             email,
             password,
             username: username.toLowerCase()
@@ -270,10 +272,10 @@ const changeCurrentPassword = asyncHandler( async (req, res) => {
         throw new ApiError(400, "Invalid Old Password 💔💔💔")
     }
     user.password = newPassword;     
-    await user.save({validateBeforeSave: false});             //password will be updated by  "userSchema.pre("save", callback())" 
+    await user.save({validateBeforeSave: false});             //password will be updated by  ' userSchema.pre("save", callback()) ' present in 'user.model.js'
                                                                 // this property or hook will be called when we say "user.save" which was defined in 'user.models.js'
 
-                                                                //I dont want to check validations so i set validateBeforeSave to false, required validation is already done manually by that hook.
+                                                                //I don't want to check validations so, I set validateBeforeSave to false, required validation is already done manually by that hook.
     return res
     .status(200)
     .json( new ApiResponse(200, {}, 'Password Changed Successfully 🥳🥳🥳') );
@@ -293,7 +295,7 @@ const updateUserDetails = asyncHandler( async (req, res) => {
     const user = await User.findByIdAndUpdate(
         req.user?._id, 
         {
-            $set: {  //set receives an object..
+            $set: {  //set receives an object.
                 fullName, 
                 email,
             }
@@ -313,7 +315,7 @@ const updateUserAvatar = asyncHandler( async (req, _) => {
         throw new ApiError( 400, "Avatar File is Missing...😔😔😔");
     }
 
-    const avatar = await uploadOnCloudinary(avatarLocalPath);   //clouidnary gives response we need to use that url present in the response.
+    const avatar = await uploadOnCloudinary(avatarLocalPath);   //cloudinary gives response we need to use that url present in the response.
 
     if(!avatar.url){
         throw new ApiError(400, "Error While Uploading...🤏🤏🤏");
@@ -329,7 +331,9 @@ const updateUserAvatar = asyncHandler( async (req, _) => {
         {
             new: true,          //If you set new: true, Mongoose will instead return the updated document (the one after applying your changes).
         }
-    ).select("-password");      //rremoves password key from the response..
+    ).select("-password");      //removes password key from the response.
+
+    await deleteAssetFromCloudinary(user.avatar);  //deleting previous avatar from cloudinary
 
     return res
     .status(200)
@@ -346,7 +350,7 @@ const updateUserCoverImage = asyncHandler( async (req, _) => {
         throw new ApiError( 400, "CoverImage File is Missing...😔😔😔");
     }
 
-    const coverImage = await uploadOnCloudinary(coverImageLocalPath);   //clouidnary gives response we need to use that url present in the response.
+    const coverImage = await uploadOnCloudinary(coverImageLocalPath);   //cloudinary gives response we need to use that url present in the response.
 
     if(!coverImage.url){
         throw new ApiError(400, "Error While Uploading...🤏🤏🤏");
@@ -362,13 +366,149 @@ const updateUserCoverImage = asyncHandler( async (req, _) => {
         {
             new: true,          //If you set new: true, Mongoose will instead return the updated document (the one after applying your changes).
         }
-    ).select("-password");      //rremoves password key from the response..
+    ).select("-password");      //removes password key from the response.
+
+    await deleteAssetFromCloudinary(user.coverImage);  //deleting previous coverImage from cloudinary
 
     return res
     .status(200)
     .json(
         new ApiResponse( 200, user, "User CoverImage Updated Successfully...🎉🎉🎉")
     );
+})
+
+const getUserChannelProfile = asyncHandler( async (req, res) => {
+
+    const {username} = req.params;
+
+    if (!username?.trim()) {
+        throw new ApiError(400, "UserName is MISSING...😔😔😔")
+    }
+
+    // User.find({username})
+
+    const channel = await User.aggregate(
+        [
+            {
+                $match:{
+                    username: username?.toLowerCase(),
+                }
+            },
+            {
+                $lookup: {
+                    from: "Subscriptions",
+                    localField: "_id",
+                    foreignField: "channel",
+                    as: "subscribers",
+                }
+            },
+            {
+                $lookup: {
+                    from: "Subscriptions",
+                    localField: "_id",
+                    foreignField: "subscriber",
+                    as: "subscribedTo",
+                }
+            },
+            {
+                $addFields: {
+                    subscribersCount: {
+                        $size: "$subscribers"
+                    },
+                    channelsSubscribedTo: {
+                        $size: "$SubcribedTo"
+                    },
+                    isSubscribed: {
+                        $condition: {
+                            if: { $in: [ req.user?._id, "$subscribers.subscriber" ] },
+                            then: true,
+                            else: false,
+                        }
+                    }
+                }
+            },
+            {
+                $project: {
+                    fullName: 1,
+                    username: 1,
+                    subscribersCount: 1,
+                    channelsSubscribedTo: 1,
+                    isSubscribed: 1,
+                    avatar: 1,
+                    coverImage: 1,
+                    email: 1,
+                }
+            }
+        ]
+    )
+    if(!channel?.length){
+        throw new ApiError(404, "Channel Doesn't Exists !!! 😒😒😒");
+    }
+
+    return res
+    .status(200)
+    .json( new ApiResponse(200, channel[0], "User Channel Created Successfully...!!!🎊🎊🎊") );
+
+})
+
+const getWatchHistory = asyncHandler ( async (req, res) => {
+    // req.used._id;  -->  //inside mongoDB this it is stored as --ObjectId("hdsifhewoifnr")--  when we ask for id again it gives us the string not object this is done by mongoose internally..
+
+    const user = await User.aggregate(
+        [
+            {
+                $match: {
+                    _id: new mongoose.Types.ObjectId(req.user._Id),
+                }
+            },
+            {
+                $lookup: {
+                    from: "videos",
+                    localField: "watchHistory",
+                    foreignField: "_id",
+                    as: "watchHistory",
+
+                    pipeline: [
+                        {
+                            $lookup: {
+                                from: "users",
+                                localField: "owner",
+                                foreignField: "_id",
+                                as: "owner",
+
+                                pipeline: [
+                                    {
+                                        $project: {
+                                            fullName: 1,
+                                            username: 1,
+                                            avatar: 1,
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {                       //by doing this we will be sending --owner-- object rather than an normal array normally when we add a new field it will be added as an array but now we can make it an object rather than an array
+                            $addFields: {
+                                owner: {
+                                    $first: "$owner",    //rather than objects[] array of objects it only saves the first element of the array... as an single object.
+                                }
+                            }
+                        }
+                    ]
+                }
+            }
+        ]
+    )
+
+    return res
+    .status(200)
+    .json(
+        new ApiResponse (
+            200, 
+            user[0].watchHistory,
+            "Watch History Fetched !!!...🥳🥳🥳"
+        )
+    )
 })
 
 export {
@@ -381,4 +521,6 @@ export {
     updateUserDetails,
     updateUserAvatar,
     updateUserCoverImage,
+    getUserChannelProfile,
+    getWatchHistory,
 }; 
