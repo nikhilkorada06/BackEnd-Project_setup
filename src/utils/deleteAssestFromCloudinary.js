@@ -1,4 +1,4 @@
-import { cloudinary } from "../models/cloudinary.js"; // use default export if that's how you set it up
+import { cloudinary } from "./cloudinary.js"; // use default export if that's how you set it up
 
 const deleteAssetFromCloudinary = async (public_id) => {
   try {
