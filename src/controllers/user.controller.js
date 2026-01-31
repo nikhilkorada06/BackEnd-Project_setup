@@ -6,6 +6,8 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 import jwt from "jsonwebtoken";
 import deleteAssetFromCloudinary from "../utils/deleteAssestFromCloudinary.js";
 
+
+
 const generateAccessAndRefreshToken = async (userId) => {      // received id of the user as an argument
     try {
         const user = await User.findById(userId);           //find the user using his id.
@@ -20,6 +22,8 @@ const generateAccessAndRefreshToken = async (userId) => {      // received id of
         throw new ApiError(500, "Something Went Wrong While Generating REFRESH and ACCESS TOKENS"); //In case of any error in generating both the tokens show this error.
     }
 };
+
+
 
 const registerUser = asyncHandler( async (req, res)=> {
     console.log("Register controller hit, Hii From user.controller.js");
@@ -135,6 +139,8 @@ const registerUser = asyncHandler( async (req, res)=> {
     
 });
 
+
+
 const loginUser = asyncHandler( async (req, res)=> {
     //receive request body -> data
     //user can 'login' using either username or email
@@ -144,20 +150,26 @@ const loginUser = asyncHandler( async (req, res)=> {
     //send both tokens as cookies
 
     const { email, username, password } = req.body;
+
     if ( !(username || email) ) {
         throw new ApiError(400, "UserName or E-Mail is Mandatory...");
     }
+
     const user = await User.findOne({
-        $or: [{ username }, { email }]
+        $or: [ { username }, { email } ]
     })
-    if(!user){
+
+    if( !user ){
         throw new ApiError(404, "User Doesn't EXIST !!!");
     }
+
     const isPasswordValid = await user.isPasswordCorrect(password);
-    if(!isPasswordValid){
+
+    if( !isPasswordValid ){
         throw new ApiError( 401, "Invalid Password !!!..")
     }
-    const {accessToken, refreshToken} = await generateAccessAndRefreshToken(user._id);
+
+    const { accessToken, refreshToken } = await generateAccessAndRefreshToken(user._id);
 
     const loggedInUser = await User.findById(user._id).select("-password -refreshToken");  //in user object we have a lot of unwanted keys like we have no use with password and refresh token
                                                                                             //actually we don't need password filed and refreshToken filed is also empty
@@ -184,6 +196,8 @@ const loginUser = asyncHandler( async (req, res)=> {
     );
 
 });
+
+
 
 const logoutUser = asyncHandler( async (req, res) => {
     await User.findByIdAndUpdate(
@@ -220,6 +234,8 @@ const logoutUser = asyncHandler( async (req, res) => {
         )
     );
 })
+
+
 
 const refreshAccessToken = asyncHandler( async (req, res) => {
 
@@ -272,6 +288,8 @@ const refreshAccessToken = asyncHandler( async (req, res) => {
     }
 });
 
+
+
 const changeCurrentPassword = asyncHandler( async (req, res) => {
     const {oldPassword, newPassword} = req.body;
     const user = await User.findById(req.user?._id);
@@ -289,17 +307,24 @@ const changeCurrentPassword = asyncHandler( async (req, res) => {
     .json( new ApiResponse(200, {}, 'Password Changed Successfully 🥳🥳🥳') );
 })
 
+
+
 const getCurrentUser = asyncHandler( async (req, res) => {
     return res
     .status(200)
     .json( new ApiResponse(200, req.user, "current user Fetched Successfully !!! 🍹🍹🍹"))
 })
 
+
+
 const updateUserDetails = asyncHandler( async (req, res) => {
+    
     const { fullName, email } = req.body;
+    
     if (!(fullName || email)) {
         throw new ApiError(400, "All fields are Required 😊😊😊");
     }
+    
     const user = await User.findByIdAndUpdate(
         req.user?._id, 
         {
@@ -317,6 +342,8 @@ const updateUserDetails = asyncHandler( async (req, res) => {
     .status(200)
     .json(new ApiResponse(200, user, "User Details Updated... 🎉🎉🎉"))
 })
+
+
 
 const updateUserAvatar = asyncHandler( async (req, res) => {
     const avatarLocalPath = req.file?.path;                    //Take the image user given to replace previous image.
@@ -353,6 +380,8 @@ const updateUserAvatar = asyncHandler( async (req, res) => {
 
 })
 
+
+
 const updateUserCoverImage = asyncHandler( async (req, res) => {
     const coverImageLocalPath = req.file?.path;                    //Take the image user given to replace previous image.
 
@@ -386,6 +415,8 @@ const updateUserCoverImage = asyncHandler( async (req, res) => {
         new ApiResponse( 200, user, "User CoverImage Updated Successfully and Previous CoverImage Deleted from Cloudinary...🎉🎉🎉")
     );
 })
+
+
 
 const getUserChannelProfile = asyncHandler( async (req, res) => {
 
@@ -461,6 +492,8 @@ const getUserChannelProfile = asyncHandler( async (req, res) => {
 
 })
 
+
+
 const getWatchHistory = asyncHandler ( async (req, res) => {
     // req.used._id;  -->  //inside mongoDB this it is stored as --ObjectId("hdsifhewoifnr")--  when we ask for id again it gives us the string not object this is done by mongoose internally..
 
@@ -520,6 +553,8 @@ const getWatchHistory = asyncHandler ( async (req, res) => {
         )
     )
 })
+
+
 
 export {
     registerUser,
