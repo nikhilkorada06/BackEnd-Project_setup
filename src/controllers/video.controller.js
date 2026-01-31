@@ -28,19 +28,19 @@ const publishAVideo = asyncHandler(async (req, res) => {
         throw new ApiError(400, "Video file and thumbnail are required...💂🏻‍♀️💂🏻‍♀️💂🏻‍♀️");
     }
 
-    const videoFile = req.files?.videoFile[0];
-    const thumbnailFile = req.files?.thumbnail[0];
+    const videoFilePath = req.files?.videoFile[0]?.path;
+    const thumbnailFilePath = req.files?.thumbnail[0]?.path;
 
     // Upload video to Cloudinary
-    const uploadedVideo = await uploadOnCloudinary(videoFile.path);
-    const uploadedThumbnail = await uploadOnCloudinary(thumbnailFile.path);
+    const uploadedVideo = await uploadOnCloudinary(videoFilePath);
+    const uploadedThumbnail = await uploadOnCloudinary(thumbnailFilePath);
 
     if(!uploadedVideo || !uploadedThumbnail) {  
         throw new ApiError(500, "Error uploading files to Cloudinary...💂🏻‍♀️💂🏻‍♀️💂🏻‍♀️");
     }
 
     // Create video document in MongoDB
-    const newVideo = new Video({
+    const newVideo = await Video.create({
         videoFile: uploadedVideo.url,
         thumbnail: uploadedThumbnail.url,
         title,
@@ -65,16 +65,54 @@ const publishAVideo = asyncHandler(async (req, res) => {
 
 
 const getVideoById = asyncHandler(async (req, res) => {
-    const { videoId } = req.params;
     //TODO: get video by id
+
+    const { videoId } = req.params;
+
+    const video = await Video.findById( videoId ).populate("owner", "username email");
+
+    if( !video ) {
+        throw new ApiError( 404, "Video not found...💂🏻‍♀️💂🏻‍♀️💂🏻‍♀️" );
+    }
+
+    return res
+    .status(200)
+    .json(
+        new ApiResponse(
+            200,
+            "Video fetched successfully...!!!🎉🎉🎉",
+            {
+                video: video
+            }
+        )
+    );
+
 })
 
 
 
 const updateVideo = asyncHandler(async (req, res) => {
-    const { videoId } = req.params;
     //TODO: update video details like title, description, thumbnail
+    
+    const { videoId } = req.params;
+    
+    const video = await Video.findById( videoId );
+    
+    if(!video) {
+        throw new ApiError(404, "Video not found...😔😔😔");
+    }
+    
+    const { title, description } = req.body;
 
+    if(title) video.title = title;
+    if(description) video.description = description;
+
+    return res
+    .status(200)
+    .json(
+        200,
+        "Video Details Updated Successfully...!!!🎉🎊🎉"
+    );
 })
 
 
