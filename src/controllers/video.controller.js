@@ -96,37 +96,97 @@ const updateVideo = asyncHandler(async (req, res) => {
     
     const { videoId } = req.params;
     
-    const video = await Video.findById( videoId );
-    
-    if(!video) {
+    if( !videoId ){
         throw new ApiError(404, "Video not found...😔😔😔");
     }
     
     const { title, description } = req.body;
 
-    if(title) video.title = title;
-    if(description) video.description = description;
+    if(!(title || description)){
+        throw new ApiError( 400, "All Fields are REQUIRED...💂🏻‍♀️💂🏻‍♀️💂🏻‍♀️");
+    }
+
+    const thumbnailLocalPath = req.file?.path;
+
+    if(!thumbnailLocalPath){
+        throw new ApiError(400, "Thumbnail File Missing or Upload Error...😔😔😔");
+    }
+
+    const thumbnail = await uploadOnCloudinary(thumbnailLocalPath);
+
+    if(!thumbnail.url){
+        throw new ApiError(400, "Thumbnail File Missing...😔😔😔");
+    }
+
+    const video = await Video.findByIdAndUpdate(
+        videoId,
+        {
+            $set: {
+                thumbnail: thumbnail.url,
+                title,
+                description,
+            }
+        },
+        {
+            new: true,
+        },
+    ).select("-views")
 
     return res
-    .status(200)
-    .json(
+    .status( 200 )
+    .json( new ApiResponse(
         200,
-        "Video Details Updated Successfully...!!!🎉🎊🎉"
-    );
+        video,
+        "Video Details Updated Successfully...!!!🎉🎊🎉",
+    ));
 })
 
 
 
 const deleteVideo = asyncHandler(async (req, res) => {
-    const { videoId } = req.params;
     //TODO: delete video
+    
+    const { videoId } = req.params;
+
+    await Video.findByIdAndDelete(videoId)
+
+    return res
+    .status(200)
+    .json( new ApiResponse (200, null, "Video Deleted Successfully !!!...🍹🍹🍹"));
+
 })
 
 
 
 const togglePublishStatus = asyncHandler(async (req, res) => {
+
     const { videoId } = req.params;
-})
+
+    //Get current video
+    const video = await Video.findById(videoId);
+
+    if (!video) {
+        return res.status(404).json(
+            new ApiResponse(404, null, "Video not found")
+        );
+    }
+
+    // Toggle value
+    video.isPublished = !video.isPublished;
+
+    // Save updated doc
+    await video.save();
+
+    return res.status(200).json(
+        new ApiResponse(
+            200,
+            video,
+            "Publish Status Successfully Changed"
+        )
+    );
+
+});
+
 
 
 
