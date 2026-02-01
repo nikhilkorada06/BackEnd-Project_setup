@@ -41,7 +41,7 @@ const toggleVideoLike = asyncHandler(async (req, res) => {
 
 
 const toggleCommentLike = asyncHandler(async (req, res) => {
-    //TODO: toggle like on comment
+    // // TODO: toggle like on comment
 
     const {commentId} = req.params;
     const userId = req.user._id;
@@ -107,6 +107,32 @@ const toggleTweetLike = asyncHandler(async (req, res) => {
 
 const getLikedVideos = asyncHandler(async (req, res) => {
     //TODO: get all liked videos
+
+    const userId = req.user._id;
+
+    const likedVideos = await Like.find(
+        { 
+            likedBy: userId, 
+            video: { 
+                $exists: true 
+            } 
+        }
+    ).populate('video');    // Populate video details --> shows the complete video object instead of just the ID
+
+    if(!likedVideos){
+        throw new ApiError(404, "No Liked Videos Found !!!😔😔😔");
+    }
+    
+    if(likedVideos.length === 0){
+        return res
+        .status(200)
+        .json( new ApiResponse(200, [], "No Liked Videos Found !!!😔😔😔"));
+    }
+
+    return res
+    .status(200)
+    .json( new ApiResponse(200, likedVideos, "Liked Videos Fetched Successfully !!!😍😍😍"));
+    
 })
 
 
