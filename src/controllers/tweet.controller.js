@@ -7,7 +7,7 @@ import asyncHandler from "../utils/asyncHandler.js"
 
 
 const createTweet = asyncHandler( async (req, res) => {
-    //TODO: create tweet
+    // // TODO: create tweet
     const tweetContent = req.body.content;
     const userId = req.user._id;
 
@@ -28,7 +28,7 @@ const createTweet = asyncHandler( async (req, res) => {
 
 
 const getUserTweets = asyncHandler( async (req, res) => {
-    // TODO: get user tweets
+    // // TODO: get user tweets
 
     const { userId } = req.params || req.user._id;
 
@@ -47,7 +47,7 @@ const getUserTweets = asyncHandler( async (req, res) => {
 
 
 const updateTweet = asyncHandler( async (req, res) => {
-    //TODO: update tweet
+    // // TODO: update tweet
 
     const { content } = req.body;
 
@@ -82,7 +82,7 @@ const updateTweet = asyncHandler( async (req, res) => {
 
 
 const deleteTweet = asyncHandler( async (req, res) => {
-    //TODO: delete tweet
+    // // TODO: delete tweet
 
     const { tweetId } = req.params;
     if (!isValidObjectId(tweetId)) {

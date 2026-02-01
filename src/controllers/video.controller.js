@@ -16,7 +16,7 @@ const getAllVideos = asyncHandler(async (req, res) => {
 
 
 const publishAVideo = asyncHandler(async (req, res) => {
-    // TODO: get video, upload to cloudinary, create video
+    // // TODO: get video, upload to cloudinary, create video
     
     const { title, description } = req.body;
 
@@ -65,7 +65,7 @@ const publishAVideo = asyncHandler(async (req, res) => {
 
 
 const getVideoById = asyncHandler(async (req, res) => {
-    //TODO: get video by id
+    // // TODO: get video by id
 
     const { videoId } = req.params;
 
@@ -92,7 +92,7 @@ const getVideoById = asyncHandler(async (req, res) => {
 
 
 const updateVideo = asyncHandler(async (req, res) => {
-    //TODO: update video details like title, description, thumbnail
+    // // TODO: update video details like title, description, thumbnail
     
     const { videoId } = req.params;
     
@@ -144,7 +144,7 @@ const updateVideo = asyncHandler(async (req, res) => {
 
 
 const deleteVideo = asyncHandler(async (req, res) => {
-    //TODO: delete video
+    // // TODO: delete video
     
     const { videoId } = req.params;
 
