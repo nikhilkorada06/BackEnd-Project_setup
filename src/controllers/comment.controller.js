@@ -7,11 +7,70 @@ import asyncHandler from "../utils/asyncHandler.js"
 
 
 const getVideoComments = asyncHandler( async (req, res) => {
-    //TODO: get all comments for a video
+    // // TODO: get all comments for a video
 
-    const {videoId} = req.params;
-    const {page = 1, limit = 10} = req.query;
+    
+    //-------------------skip and limit for pagination-------------------------
 
+    // const { videoId } = req.params;
+    // const { page = 1, limit = 10 } = req.query;
+
+    // let pageNum = parseInt(page);
+    // let limitNum = parseInt(limit);
+    
+    // let skip = (pageNum - 1) * limitNum;
+
+    // const comments = await Comment
+    // .find( { video: videoId } )
+    // .skip( skip )
+    // .limit( limitNum )
+    // .populate('owner', 'username avatar');
+
+    // if(!comments || comments.length === 0){
+    //     throw new ApiError (404, "NO Comments Found for this Video !!!😔😔😔");
+    // }
+
+    // return res
+    // .status(200)
+    // .json( new ApiResponse ( 200, comments, `${comments.length} Comments Fetched Successfully !!!😎😎😎`));
+
+
+    
+    
+    //---------------------- cursor based pagination -------------------------
+
+    const { videoId } = req.params;
+
+    const { cursor, limit = 3 } = req.query;
+
+    const query = {
+        video: videoId,
+    };
+
+    if(cursor){
+        query._id = { $lt: cursor };
+    }
+
+    const comments = await Comment
+    .find( query )
+    .sort( { _id: -1 } )
+    .limit( parseInt(limit) )
+    .populate('owner', 'username avatar');
+
+    if( !comments || comments.length === 0 ){
+        throw new ApiError (404, "NO Comments Found for this Video !!!😔😔😔");
+    }
+
+    return res
+    .status(200)
+    .json( new ApiResponse ( 
+        200, 
+        comments, 
+        { 
+            nextCursor: comments.length ? comments[comments.length -1]._id : null 
+        }, 
+        `${comments.length} Comments Fetched Successfully !!!😎😎😎`
+    ));
 
 })
 
@@ -25,7 +84,7 @@ const addComment = asyncHandler( async (req, res) => {
     const userId = req.user._id;
 
     if(!videoId || !content || !userId){
-        new ApiError (400, "Error Receiving Your Comment Try Again Later !!!😔😔😔");
+        throw new ApiError (400, "Error Receiving Your Comment Try Again Later !!!😔😔😔");
     }
 
     const comment = await Comment.create({
@@ -35,7 +94,7 @@ const addComment = asyncHandler( async (req, res) => {
     })
 
     if(!comment){
-        new ApiError (400, "Error Uploading Your Comment Try Again Later !!!😔😔😔");
+        throw new ApiError (400, "Error Uploading Your Comment Try Again Later !!!😔😔😔");
     }
 
     return res
