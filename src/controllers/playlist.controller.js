@@ -40,8 +40,8 @@ const createPlaylist = asyncHandler(async (req, res) => {
 
 
 
-const getUserPlaylists = asyncHandler(async (req, res) => {
-    //TODO: get user playlists
+const getUserPlaylists = asyncHandler( async (req, res) => {
+    // // TODO: get user playlists
 
     const { userId } = req.params;
 
@@ -64,32 +64,35 @@ const getUserPlaylists = asyncHandler(async (req, res) => {
     return res
     .status( 200 )
     .json ( new ApiResponse( 200, playlists, "User PLAYLISTS Retrieved Successfully !!!😍😍😍") );
+
 })
 
 
 
-const getPlaylistById = asyncHandler(async (req, res) => {
+const getPlaylistById = asyncHandler( async (req, res) => {
     const {playlistId} = req.params
     //TODO: get playlist by id
 })
 
-const addVideoToPlaylist = asyncHandler(async (req, res) => {
+
+
+const addVideoToPlaylist = asyncHandler( async (req, res) => {
     const {playlistId, videoId} = req.params
     //TODO: add video to playlist
 })
 
-const removeVideoFromPlaylist = asyncHandler(async (req, res) => {
+const removeVideoFromPlaylist = asyncHandler( async (req, res) => {
     const {playlistId, videoId} = req.params
     // TODO: remove video from playlist
 
 })
 
-const deletePlaylist = asyncHandler(async (req, res) => {
+const deletePlaylist = asyncHandler( async (req, res) => {
     const {playlistId} = req.params
     // TODO: delete playlist
 })
 
-const updatePlaylist = asyncHandler(async (req, res) => {
+const updatePlaylist = asyncHandler( async (req, res) => {
     const {playlistId} = req.params
     const {name, description} = req.body
     //TODO: update playlist
