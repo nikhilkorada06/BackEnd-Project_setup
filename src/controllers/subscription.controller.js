@@ -1,8 +1,7 @@
-import mongoose, {isValidObjectId} from "mongoose"
-import {User} from "../models/user.model.js"
+import { isValidObjectId } from "mongoose"
 import { Subscription } from "../models/subscription.model.js"
-import {ApiError} from "../utils/ApiErrors.js"
-import {ApiResponse} from "../utils/ApiResponse.js"
+import { ApiError } from "../utils/ApiErrors.js"
+import { ApiResponse } from "../utils/ApiResponse.js"
 import asyncHandler from "../utils/asyncHandler.js"
 
 
@@ -136,7 +135,6 @@ const getSubscribedChannels = asyncHandler( async (req, res) => {
     .status(200)
     .json( new ApiResponse ( 200, channels, "Subscribed Channels Fetched Successfully!!!😍😍😍" ) );
 })
-
 
 
 
