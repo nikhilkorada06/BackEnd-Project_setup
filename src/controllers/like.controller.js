@@ -1,4 +1,4 @@
-import mongoose, {isValidObjectId} from "mongoose"
+import mongoose, { isValidObjectId } from "mongoose"
 import {Like} from "../models/like.model.js"
 import {ApiError} from "../utils/ApiErrors.js"
 import {ApiResponse} from "../utils/ApiResponse.js"
@@ -12,10 +12,18 @@ const toggleVideoLike = asyncHandler(async (req, res) => {
     const { videoId } = req.params;
     const userId = req.user._id;
 
-    const existingLike = await Like.findOne({ video: videoId, likedBy: userId });
+    if(!isValidObjectId(videoId)){
+        throw new ApiError(400, "Invalid VIDEO ID...💔💔💔")
+    }
+
+    const existingLike = await Like.findOne(
+        { 
+            video: videoId, 
+            likedBy: userId 
+        }
+    );
 
     if (existingLike) {
-        // If like exists, remove it (unlike)
         await Like.deleteOne({ _id: existingLike._id });
 
         return res
@@ -106,23 +114,53 @@ const toggleTweetLike = asyncHandler(async (req, res) => {
 
 
 const getLikedVideos = asyncHandler(async (req, res) => {
-    //TODO: get all liked videos
+    // // TODO: get all liked videos
 
+    
+    //----------Normal Method (Without Pagination)----------
+
+    // const userId = req.user._id;
+
+    // const likedVideos = await Like.find(
+    //     { 
+    //         likedBy: userId, 
+    //         video: { 
+    //             $exists: true 
+    //         } 
+    //     }
+    // ).populate('video');    // Populate video details --> shows the complete video object instead of just the ID
+
+    
+
+    
+    //----------Cursor Pagination Method ----------
+    
     const userId = req.user._id;
-
-    const likedVideos = await Like.find(
-        { 
-            likedBy: userId, 
-            video: { 
-                $exists: true 
-            } 
+    const { cursor, limit = 3 } = req.query;
+    
+    let query = {
+        likedBy: userId,
+        video: {
+            $exists: true,
         }
-    ).populate('video');    // Populate video details --> shows the complete video object instead of just the ID
-
+    }
+    
+    if(cursor){
+        query._id = { 
+            $lt: cursor 
+        }
+    }
+    
+    const likedVideos = await Like
+    .find( query )
+    .limit( parseInt(limit) )
+    .sort( { _id: -1 } )
+    .populate('video')
+    
     if(!likedVideos){
         throw new ApiError(404, "No Liked Videos Found !!!😔😔😔");
     }
-    
+
     if(likedVideos.length === 0){
         return res
         .status(200)
@@ -133,6 +171,7 @@ const getLikedVideos = asyncHandler(async (req, res) => {
     .status(200)
     .json( new ApiResponse(200, likedVideos, "Liked Videos Fetched Successfully !!!😍😍😍"));
     
+
 })
 
 

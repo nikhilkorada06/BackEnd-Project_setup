@@ -239,7 +239,7 @@ const logoutUser = asyncHandler( async (req, res) => {
 
 const refreshAccessToken = asyncHandler( async (req, res) => {
 
-    const incomingRefreshToken =  req.cookies.refreshToken || req.body.refreshToken;  //apps cannot send referesh token in cookies so we are also allowing body to be sent in body.
+    const incomingRefreshToken =  req.cookies.refreshToken || req.body.refreshToken;  //apps cannot send refresh token in cookies so we are also allowing body to be sent in body.
 
     if(!incomingRefreshToken){
         throw new ApiError(401, "unauthorized request 😔😒😔");
@@ -457,7 +457,7 @@ const getUserChannelProfile = asyncHandler( async (req, res) => {
                         $size: "$subscribers"
                     },
                     channelsSubscribedTo: {
-                        $size: "$SubcribedTo"
+                        $size: "$subscribedTo"
                     },
                     isSubscribed: {
                         $condition: {
