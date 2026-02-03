@@ -70,33 +70,171 @@ const getUserPlaylists = asyncHandler( async (req, res) => {
 
 
 const getPlaylistById = asyncHandler( async (req, res) => {
-    const {playlistId} = req.params
-    //TODO: get playlist by id
+    // // TODO: get playlist by id
+
+    const { playlistId } = req.params
+
+    if( !isValidObjectId(playlistId) ){
+        throw new ApiError( 404, "Invalid Playlist ID...😔😔😔" );
+    }
+
+    const playlist = await Playlist.findById( playlistId );
+
+    if( !playlist ){
+        throw new ApiError ( 404, "Error finding playlist...😔😔😔" );
+    }
+
+    return res
+    .status( 200 )
+    .json( new ApiResponse(
+        201, 
+        playlist, 
+        "PlayList Retrieved Successfully!!!💂🏻‍♀️💂🏻‍♀️💂🏻‍♀️"
+    ) );
+
 })
 
 
 
 const addVideoToPlaylist = asyncHandler( async (req, res) => {
-    const {playlistId, videoId} = req.params
-    //TODO: add video to playlist
-})
+    // // TODO: add video to playlist
+
+    const { playlistId, videoId } = req.params;
+
+    if( !isValidObjectId( playlistId ) || !isValidObjectId( videoId ) ){
+        throw new ApiError ( 404, "playlistId or videoId is invalid...😔😔😔" );
+    }
+
+    const playlist = await Playlist.findByIdAndUpdate( 
+        playlistId,
+        {
+            $addToSet: { videos: videoId },
+        },
+        {
+            new: true,
+        }
+    )
+    
+    if( !playlist ){
+        throw new ApiError ( 404, "PlayList NOT FOUND...😔😔😔" );
+    }
+
+    return res
+    .status( 200 )
+    .json( new ApiResponse( 
+        200, 
+        playlist, 
+        "Video Added To Playlist Successfully!!!🍹🍹🍹"
+    ) );
+
+} )
+
+
+
 
 const removeVideoFromPlaylist = asyncHandler( async (req, res) => {
-    const {playlistId, videoId} = req.params
-    // TODO: remove video from playlist
+    // // TODO: remove video from playlist
+
+    const { playlistId, videoId } = req.params;
+
+    if( !isValidObjectId( playlistId ) || !isValidObjectId( videoId ) ){
+        throw new ApiError ( 404, "playlistId or videoId is invalid...😔😔😔" );
+    }
+
+    const playlist = await Playlist.findByIdAndUpdate( 
+        playlistId,
+        {
+            $pull: { videos: videoId },
+        },
+        {
+            new: true,
+        }
+    )
+
+    if( !playlist ){
+        throw new ApiError ( 404, "PlayList NOT FOUND...😔😔😔" );
+    }
+
+    return res
+    .status( 200 )
+    .json( new ApiResponse( 
+        200, 
+        playlist, 
+        "Video Removed From Playlist Successfully!!!🍹🍹🍹"
+    ) );
 
 })
+
+
 
 const deletePlaylist = asyncHandler( async (req, res) => {
-    const {playlistId} = req.params
-    // TODO: delete playlist
+    // // TODO: delete playlist
+
+    const { playlistId } = req.params;
+
+    if( !isValidObjectId( playlistId ) ){
+        throw new ApiError ( 404, "playlistId is invalid...😔😔😔" );
+    }
+
+    const playlist = await Playlist.findByIdAndDelete( playlistId );
+
+    if( !playlist ){
+        throw new ApiError ( 404, "PlayList NOT FOUND...😔😔😔" );
+    }
+
+    return res
+    .status( 200 )
+    .json( new ApiResponse( 
+        200, 
+        null, 
+        "Playlist Deleted Successfully!!!🍹🍹🍹"
+    ) );
 })
 
+
+
 const updatePlaylist = asyncHandler( async (req, res) => {
-    const {playlistId} = req.params
-    const {name, description} = req.body
-    //TODO: update playlist
+    // // TODO: update playlist
+
+    const { playlistId } = req.params;
+    const { name, description } = req.body;
+
+    if( !isValidObjectId( playlistId ) ){
+        throw new ApiError ( 404, "playlistId is invalid...😔😔😔" );
+    }
+
+    if( !name || !description ){
+        throw new ApiError ( 400, "Name or Description is missing...🤏🤏🤏" );
+    }
+
+    const playlist = await Playlist.findByIdAndUpdate( 
+        playlistId,
+        {
+            $set: {
+                name,
+                description,
+            },
+        },
+        {
+            new: true,
+        }
+    )
+
+    if( !playlist ){
+        throw new ApiError ( 404, "PlayList NOT FOUND...😔😔😔");
+    }
+
+    return res
+    .status( 200 )
+    .json( new ApiResponse( 
+        200, 
+        playlist, 
+        "Playlist Updated Successfully!!!🍹🍹🍹"
+    ) );
+
 })
+
+
 
 export {
     createPlaylist,
