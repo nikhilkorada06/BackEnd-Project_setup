@@ -9,45 +9,80 @@ import { uploadOnCloudinary } from "../utils/cloudinary.js"
 
 
 const getAllVideos = asyncHandler(async (req, res) => {
-    //TODO: get all videos based on query, sort, pagination
+    // // TODO: get all videos based on query, sort, pagination
 
     const { page = 1, limit = 3, query, sortBy, sortType, userId } = req.query;
 
-    let filter = { 
-        isPublished: true 
-    };
+    const skip = (page - 1) * limit;
 
+    let matchStage = {};
+
+    //search filter
     if( query ){
-        filter.$or = [
-            { title: { $regex: query, $options: "i" } },
-            { description: { $regex: query, $options: "i" } },
-        ];
+        matchStage.$or = [
+            {
+                title: {
+                    $regex: query,          //match pattern
+                    $options: "i"           //case insensitive
+                }
+            },
+            {
+                description: {
+                    $regex: query,          //match pattern
+                    $options: "i"           //case insensitive
+                }
+            }
+        ]
     }
 
-    const videos = await Video
-    .find( filter )
-    .sort( {
-        [ sortBy || "createdAt" ] : sortType === "asc" ? 1 : -1
-    })
-    .skip( ( page - 1 ) * limit )
-    .limit( parseInt( limit ) );
-    
-    const totalVideos = await Video.countDocuments( filter );
+    //owner filter
+    if( userId ){
+        if( !isValidObjectId( userId ) ){
+            throw new ApiError( 400, "Invalid User ID" );
+        }
+        matchStage.owner = mongoose.Types.ObjectId( userId );
+    }
+
+    //sorting logic
+    let sortStage = {};
+    sortStage[ sortBy ? sortBy : "createdAt" ] = sortType === "asc" ? 1 : -1;
+
+    const videos = await Video.aggregate(
+        [
+            {
+                $match: matchStage,
+            },
+            {
+                $sort: sortStage,
+            },
+            {
+                $skip: skip,
+            },
+            {
+                $limit: parseInt( limit ),
+            },
+            {
+                $lookup: {
+                    from: "users",
+                    localField: "owner",
+                    foreignField: "_id",
+                    as: "ownerDetails",
+                },
+            },
+        ]
+    );
 
     return res
-    .status(200)
-    .json( new ApiResponse(
-        200,
-        {
-            videos,
-            totalVideos,
-            currentPage: parseInt( page ),
-            totalPages: Math.ceil( totalVideos / limit )
-        },
-        "Videos Fetched Successfully...!!!🎉🎉🎉"
+    .status( 200 )
+    .json( new ApiResponse( 
+        200, 
+        videos, 
+        "Videos Fetched Successfully !!!😍😍😍"
     ) );
 
 } );
+
+
 
 
 
