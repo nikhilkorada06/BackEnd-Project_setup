@@ -146,7 +146,7 @@ const getLikedVideos = asyncHandler(async (req, res) => {
         }
     }
     
-    if(cursor){
+    if( cursor ){
         query._id = { 
             $lt: cursor 
         }
@@ -154,23 +154,23 @@ const getLikedVideos = asyncHandler(async (req, res) => {
     
     const likedVideos = await Like
     .find( query )
-    .limit( parseInt(limit) )
+    .limit( parseInt( limit ) )
     .sort( { _id: -1 } )
-    .populate('video')
+    .populate( 'video' );    // Populate video details --> shows the complete video object instead of just the ID
     
-    if(!likedVideos){
+    if( !likedVideos ){
         throw new ApiError(404, "No Liked Videos Found !!!😔😔😔");
     }
 
-    if(likedVideos.length === 0){
+    if( likedVideos.length === 0 ){
         return res
-        .status(200)
-        .json( new ApiResponse(200, [], "No Liked Videos Found !!!😔😔😔"));
+        .status( 200 ) 
+        .json( new ApiResponse( 200, [], "No Liked Videos Found !!!😔😔😔" ) );
     }
 
     return res
-    .status(200)
-    .json( new ApiResponse(200, likedVideos, "Liked Videos Fetched Successfully !!!😍😍😍"));
+    .status( 200 )
+    .json( new ApiResponse( 200, likedVideos, "Liked Videos Fetched Successfully !!!😍😍😍" ) );
 
 })
 
