@@ -10,7 +10,7 @@ import asyncHandler from "../utils/asyncHandler.js"
 const toggleSubscription = asyncHandler( async (req, res) => {
     // // TODO: controller to toggle subscription
 
-    const { channelId } = req.params
+    const { channelId } = req.params;
     const subscriberId = req.user._id;
 
     if ( !isValidObjectId(channelId) ) {
@@ -122,7 +122,7 @@ const getSubscribedChannels = asyncHandler( async (req, res) => {
     .populate("channel", "username avatar")
 
     if( !channels ){
-        new ApiError ( 404, "Sorry! Error Finding Channels...😔😔😔" );
+        throw new ApiError ( 404, "Sorry! Error Finding Channels...😔😔😔" );
     }
 
     if( channels.length === 0 ){
@@ -134,6 +134,7 @@ const getSubscribedChannels = asyncHandler( async (req, res) => {
     return res
     .status(200)
     .json( new ApiResponse ( 200, channels, "Subscribed Channels Fetched Successfully!!!😍😍😍" ) );
+
 })
 
 

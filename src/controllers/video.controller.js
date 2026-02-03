@@ -40,7 +40,7 @@ const getAllVideos = asyncHandler(async (req, res) => {
         if( !isValidObjectId( userId ) ){
             throw new ApiError( 400, "Invalid User ID" );
         }
-        matchStage.owner = mongoose.Types.ObjectId( userId );
+        matchStage.owner = new mongoose.Types.ObjectId( userId );  //turns string into ObjectId for matching
     }
 
     //sorting logic
