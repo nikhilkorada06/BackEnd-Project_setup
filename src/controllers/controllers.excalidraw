@@ -3479,7 +3479,7 @@
       "version": 36,
       "versionNonce": 242781547,
       "isDeleted": false,
-      "boundElements": null,
+      "boundElements": [],
       "updated": 1770122395411,
       "link": null,
       "locked": false,
@@ -3627,10 +3627,7 @@
       ],
       "pressures": [],
       "simulatePressure": true,
-      "lastCommittedPoint": [
-        100.39999389648438,
-        -56
-      ]
+      "lastCommittedPoint": null
     },
     {
       "id": "g3s-XgZta-Um7I-p0JMju",
@@ -3655,7 +3652,7 @@
       "version": 39,
       "versionNonce": 110089355,
       "isDeleted": false,
-      "boundElements": null,
+      "boundElements": [],
       "updated": 1770122397428,
       "link": null,
       "locked": false,
@@ -3815,10 +3812,7 @@
       ],
       "pressures": [],
       "simulatePressure": true,
-      "lastCommittedPoint": [
-        51.600006103515625,
-        -3.199981689453125
-      ]
+      "lastCommittedPoint": null
     },
     {
       "id": "56kDqB4LhWc0hpBC_AK97",
@@ -3843,7 +3837,7 @@
       "version": 35,
       "versionNonce": 585593323,
       "isDeleted": false,
-      "boundElements": null,
+      "boundElements": [],
       "updated": 1770122531419,
       "link": null,
       "locked": false,
@@ -3987,9 +3981,162 @@
       ],
       "pressures": [],
       "simulatePressure": true,
+      "lastCommittedPoint": null
+    },
+    {
+      "id": "EMTLIWYFmSFHNse0P1iqM",
+      "type": "freedraw",
+      "x": 83.9300537109375,
+      "y": 417.34998512268066,
+      "width": 94.4000244140625,
+      "height": 73.5999755859375,
+      "angle": 0,
+      "strokeColor": "#f08c00",
+      "backgroundColor": "transparent",
+      "fillStyle": "solid",
+      "strokeWidth": 2,
+      "strokeStyle": "solid",
+      "roughness": 1,
+      "opacity": 100,
+      "groupIds": [],
+      "frameId": null,
+      "index": "b0Y",
+      "roundness": null,
+      "seed": 1399669431,
+      "version": 31,
+      "versionNonce": 1580149081,
+      "isDeleted": false,
+      "boundElements": null,
+      "updated": 1770125108032,
+      "link": null,
+      "locked": false,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          2.4000244140625,
+          2.4000244140625
+        ],
+        [
+          4.800018310546875,
+          4.79998779296875
+        ],
+        [
+          8.800018310546875,
+          10.4000244140625
+        ],
+        [
+          13.600006103515625,
+          16
+        ],
+        [
+          14.4000244140625,
+          19.20001220703125
+        ],
+        [
+          17.600006103515625,
+          24
+        ],
+        [
+          21.600006103515625,
+          29.60003662109375
+        ],
+        [
+          23.2000732421875,
+          32.79998779296875
+        ],
+        [
+          23.2000732421875,
+          33.60003662109375
+        ],
+        [
+          25.600006103515625,
+          37.60003662109375
+        ],
+        [
+          26.4000244140625,
+          38.4000244140625
+        ],
+        [
+          28,
+          40
+        ],
+        [
+          29.600006103515625,
+          40
+        ],
+        [
+          33.600006103515625,
+          36.79998779296875
+        ],
+        [
+          39.2000732421875,
+          29.60003662109375
+        ],
+        [
+          42.4000244140625,
+          27.20001220703125
+        ],
+        [
+          51.2000732421875,
+          17.60003662109375
+        ],
+        [
+          60,
+          10.4000244140625
+        ],
+        [
+          63.2000732421875,
+          7.20001220703125
+        ],
+        [
+          70.4000244140625,
+          0
+        ],
+        [
+          76,
+          -5.5999755859375
+        ],
+        [
+          82.4000244140625,
+          -13.5999755859375
+        ],
+        [
+          86.4000244140625,
+          -20.79998779296875
+        ],
+        [
+          90.4000244140625,
+          -26.39996337890625
+        ],
+        [
+          92,
+          -28.79998779296875
+        ],
+        [
+          94.4000244140625,
+          -31.20001220703125
+        ],
+        [
+          94.4000244140625,
+          -32
+        ],
+        [
+          94.4000244140625,
+          -33.5999755859375
+        ],
+        [
+          94.4000244140625,
+          -33.5999755859375
+        ]
+      ],
+      "pressures": [],
+      "simulatePressure": true,
       "lastCommittedPoint": [
-        175.20005798339844,
-        -33.600006103515625
+        94.4000244140625,
+        -33.5999755859375
       ]
     }
   ],

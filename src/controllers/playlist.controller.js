@@ -10,7 +10,7 @@ const createPlaylist = asyncHandler(async (req, res) => {
     // // TODO: create playlist
 
     const { name, description } = req.body;
-    const userId = req.userId;
+    const userId = req.user._id;
     const videos = [];
     
     if ( !isValidObjectId( userId ) ) {
@@ -33,8 +33,8 @@ const createPlaylist = asyncHandler(async (req, res) => {
     }
 
     return res
-    .status( 200 )
-    .json ( new ApiResponse( 200, playlist, "New PLAYLIST Created Successfully !!!😍😍😍") );
+    .status( 201 )
+    .json ( new ApiResponse( 201, playlist, "New PLAYLIST Created Successfully !!!😍😍😍") );
 
 })
 

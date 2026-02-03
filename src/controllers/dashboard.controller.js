@@ -110,7 +110,11 @@ const getChannelVideos = asyncHandler( async (req, res) => {
 
     return res
     .status( 200 )
-    .json( 200, videos, "Videos FETCHED Successfully!!!🍹🍹🍹");
+    .json( new ApiResponse( 
+        200, 
+        videos, 
+        "Videos FETCHED Successfully!!!🍹🍹🍹"
+    ) );
 
 })
 
