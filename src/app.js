@@ -27,7 +27,7 @@ app.get("/", (req, res) => {
 
 //routes import 
 import userRouter from './routes/user.routes.js'
-import healthcheckRouter from "./routes/healthcheck.routes.js"
+import healthCheckRouter from "./routes/healthCheck.routes.js"
 import tweetRouter from "./routes/tweet.routes.js"
 import subscriptionRouter from "./routes/subscription.routes.js"
 import videoRouter from "./routes/video.routes.js"
@@ -47,7 +47,7 @@ app.use("/api/v1/users", (req, res, next) => {
                                         //--- "/users" is also a valid route.
                                         //--- "/api/v1/users" is a common practice in production level...
 
-app.use("/api/v1/healthcheck", healthcheckRouter)
+app.use("/api/v1/health-check", healthCheckRouter)
 app.use("/api/v1/tweets", tweetRouter)
 app.use("/api/v1/subscriptions", subscriptionRouter)
 app.use("/api/v1/videos", videoRouter)
